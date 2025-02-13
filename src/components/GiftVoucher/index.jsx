@@ -53,11 +53,13 @@ const GiftVoucher = () => {
                     <thead>
                         <tr className="bg-gray-100 dark:bg-strokedark">
                             <th className="border border-stroke dark:border-strokedark px-4 py-2">Date</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">User Name</th>
+                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Purches By</th>
+                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Used By</th>
+                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Discription</th>
                             <th className="border border-stroke dark:border-strokedark px-4 py-2">Email</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Number</th>
+                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Phone Number</th>
                             <th className="border border-stroke dark:border-strokedark px-4 py-2">Product Details</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Discount</th>
+                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Discount Amount</th>
                             <th className="border border-stroke dark:border-strokedark px-4 py-2">Total Amount</th>
                         </tr>
                     </thead>
@@ -70,19 +72,25 @@ const GiftVoucher = () => {
                                 admin
                             </td>
                             <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                admin@gmail.com
+                                admin
                             </td>
                             <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                1234567890
+                                HP 1920
                             </td>
                             <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                Lenova laptop i5
+                                user@gmail.com
                             </td>
                             <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                12%
+                                8899775564
                             </td>
                             <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                ₹ 26,000
+                                Laptop
+                            </td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
+                                ₹ 5,000
+                            </td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
+                                ₹ 50,000
                             </td>
                         </tr>
                     </tbody>

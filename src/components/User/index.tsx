@@ -54,7 +54,7 @@ const User = () => {
                         <th className="border border-stroke dark:border-strokedark px-4 py-2">Email</th>
                         <th className="border border-stroke dark:border-strokedark px-4 py-2">Role</th>
                         <th className="border border-stroke dark:border-strokedark px-4 py-2">Created At</th>
-                        <th className="border border-stroke dark:border-strokedark px-4 py-2">Updated At</th>
+                        {/* <th className="border border-stroke dark:border-strokedark px-4 py-2">Updated At</th> */}
                         <th className="border border-stroke dark:border-strokedark px-4 py-2">Actions</th>
                     </tr>
                 </thead>
@@ -76,9 +76,9 @@ const User = () => {
                             <td className="border border-stroke dark:border-strokedark px-4 py-2">
                                 {product.create}
                             </td>
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
+                            {/* <td className="border border-stroke dark:border-strokedark px-4 py-2">
                                 {product.update}
-                            </td>
+                            </td> */}
                             <td className="border space-y-5 border-stroke dark:border-strokedark px-4 py-2 text-center">
                                 <button className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600">
                                     Delete
