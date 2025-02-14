@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { handleGlobalError } from "./error-handler";
 
 export async function dispatchHttpRequest<T>(
@@ -16,6 +17,7 @@ export async function dispatchHttpRequest<T>(
   const defaultHeaders = {
     "Content-Type": "application/json",
     Accept: "application/json",
+    Authorization: `Bearer ${Cookies.get("accessToken")}`,
   };
 
   // Merge default headers with provided headers
