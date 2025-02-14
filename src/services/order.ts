@@ -22,7 +22,7 @@ export async function getAllOrder(): Promise<ActionResponse<any>> {
   }
 }
 
-export async function getAllOrderById(
+export async function getOrderById(
   orderId: string,
 ): Promise<ActionResponse<any>> {
   if (!API_BASE_URL?.length) {
@@ -44,26 +44,28 @@ export async function getAllOrderById(
 }
 
 export async function createOrder(payload: any): Promise<ActionResponse<any>> {
-    if (!API_BASE_URL?.length) {
-      return {
-        success: false,
-        errors: { message: "API base URL is not defined" },
-      };
-    }
-  
-    try {
-      const response: any = await dispatchHttpRequest(
-        `${API_BASE_URL}/order`,
-        "POST",
-        payload
-      );
-      return { success: true, data: response.data.data, status: response.status };
-    } catch (error: any) {
-      throw error;
-    }
+  if (!API_BASE_URL?.length) {
+    return {
+      success: false,
+      errors: { message: "API base URL is not defined" },
+    };
   }
-  
-export async function deleteOrder(orderId: string): Promise<ActionResponse<any>> {
+
+  try {
+    const response: any = await dispatchHttpRequest(
+      `${API_BASE_URL}/order`,
+      "POST",
+      payload,
+    );
+    return { success: true, data: response.data.data, status: response.status };
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+export async function deleteOrder(
+  orderId: string,
+): Promise<ActionResponse<any>> {
   if (!API_BASE_URL?.length) {
     return {
       success: false,
@@ -84,7 +86,7 @@ export async function deleteOrder(orderId: string): Promise<ActionResponse<any>>
 
 export async function updateOrder(
   orderId: string,
-): Promise<ActionResponse<any>> { 
+): Promise<ActionResponse<any>> {
   if (!API_BASE_URL?.length) {
     return {
       success: false,

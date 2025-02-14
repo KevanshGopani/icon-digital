@@ -12,14 +12,16 @@ const Order = () => {
   const [editForm, setEditForm] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Product | null>(null);
 
-  const { data: allOrder, isLoading  ,     refetch: refetchAllOrder,
+  const {
+    data: allOrder,
+    isLoading,
+    refetch: refetchAllOrder,
   } = useQuery({
     queryKey: ["all-order"],
     queryFn: async () => {
       const response = await getAllOrder();
       return response?.data || [];
     },
-    staleTime: Infinity,
     retry: false,
   });
 
@@ -34,12 +36,14 @@ const Order = () => {
   const deleteMutation = useMutation({
     mutationFn: async (orderId: string) => await deleteOrder(orderId),
     onSuccess: () => {
-      toast.success("Order deleted successfully!");
+      toast.success("Order deleted successfully!", { toastId: "deleteOrder" });
       refetchAllOrder();
     },
 
     onError: () => {
-      toast.error("Failed to delete order. Please try again.");
+      toast.error("Failed to delete order. Please try again.", {
+        toastId: "deleteOrder",
+      });
     },
   });
 
@@ -121,7 +125,7 @@ const Order = () => {
           <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
             <h3 className="font-medium text-black dark:text-white">
               Product Details
-            </h3> 
+            </h3>
             <button
               onClick={(order) => toggleAddForm()}
               className="absolute right-4 top-4 text-gray-500 hover:text-black"
