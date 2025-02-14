@@ -1,74 +1,12 @@
 "use client";
 import Image from "next/image";
-import { Product } from "@/types/product";
-import SelectGroupOne from "../SelectGroup/SelectGroupOne";
 import { useState } from "react";
 import Switch from "../common/Switch/page";
 import ActionModel from "../common/ActionModel/page";
 import { useQuery } from "@tanstack/react-query";
 import { getAllCategories } from "@/services/categories";
-import { getAllProducts } from "@/services/products";
+import { getAllProducts, updateProduct } from "@/services/products";
 import Loader from "../common/Loader";
-
-const productData: Product[] = [
-  {
-    image: "/images/product/product-01.png",
-    name: "Apple Watch Series 7",
-    price: 296,
-  },
-  {
-    image: "/images/product/product-01.png",
-    name: "Apple Watch Series 7",
-    price: 296,
-  },
-  {
-    image: "/images/product/product-01.png",
-    name: "Apple Watch Series 7",
-    price: 296,
-  },
-  {
-    image: "/images/product/product-01.png",
-    name: "Apple Watch Series 7",
-    price: 296,
-  },
-  {
-    image: "/images/product/product-01.png",
-    name: "Apple Watch Series 7",
-    price: 296,
-  },
-  {
-    image: "/images/product/product-01.png",
-    name: "Apple Watch Series 7",
-    price: 296,
-  },
-];
-
-const category: Product[] = [
-  {
-    value: "PRINTER",
-    title: "PRINTER",
-  },
-  {
-    value: "MONITOR",
-    title: "MONITOR",
-  },
-  {
-    value: "ALL_IN_ONE",
-    title: "ALL_IN_ONE",
-  },
-  {
-    value: "DESKTOP",
-    title: "DESKTOP",
-  },
-  {
-    value: "CUSTOM_PC",
-    title: "CUSTOM_PC",
-  },
-  {
-    value: "ACCESSORY",
-    title: "ACCESSORY",
-  },
-];
 
 const Products = () => {
   const [addform, setAddForm] = useState(false);
@@ -123,9 +61,7 @@ const Products = () => {
     setAddForm(!addform);
   };
 
-  const toggleEditForm = () => {
-    setEditForm(!editForm);
-  };
+
 
   // re-arrange field
 
@@ -157,6 +93,7 @@ const Products = () => {
     data: allProducts,
     error: allProductsProblemOccurred,
     isLoading: allProductsLoading,
+    refetch: refetchProducts
   } = useQuery({
     queryKey: ["all-products"],
     queryFn: async () => {
@@ -179,6 +116,46 @@ const Products = () => {
   }
 
   console.log({ allCategories, categories, filterProducts });
+
+  const toggleEditForm = (product?: any) => {
+    setEditForm(!editForm);
+    if (product) {
+      setSelectedProduct(product);
+      setImages(product?.images || []);
+    }
+  };
+
+  const handleInputChange = (e: any) => {
+    const { name, value } = e.target;
+    setSelectedProduct((prev: any) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdateProduct = async (e: any) => {
+    e.preventDefault();
+  
+    if (!selectedProduct?.id) {
+      alert("No product selected for update.");
+      return;
+    }
+  
+    try {
+      const updatedProduct = { ...selectedProduct, images };
+  
+      const response = await updateProduct(updatedProduct, selectedProduct.id);
+  
+      if (response.success) {
+        alert("Product updated successfully!");
+        setEditForm(false);
+        refetchProducts(); // If using react-query, re-fetch the product list
+      } else {
+        alert(`Failed to update product: ${response.errors.message}`);
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+      alert("Something went wrong.");
+    }
+  };
+  
 
   return (
     <div className="h-[100vh] rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -670,7 +647,10 @@ const Products = () => {
                 </label>
                 <input
                   type="text"
+                  name="name"
                   placeholder="Enter your product name"
+                  value={selectedProduct?.name || ""}
+                  onChange={handleInputChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -846,6 +826,9 @@ const Products = () => {
                 <input
                   type="text"
                   placeholder="Enter your price"
+                  name="price"
+                  value={selectedProduct?.price || ""}
+                  onChange={handleInputChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -857,6 +840,9 @@ const Products = () => {
                 <input
                   type="text"
                   placeholder="Enter your discount price"
+                  name="salePrice"
+                  value={selectedProduct?.salePrice || ""}
+                  onChange={handleInputChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -868,6 +854,9 @@ const Products = () => {
                 <input
                   type="text"
                   placeholder="Enter your GST number"
+                  name="gst"
+                  value={selectedProduct?.gst || ""}
+                  onChange={handleInputChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -879,6 +868,9 @@ const Products = () => {
                 <textarea
                   rows={6}
                   placeholder="Type your message"
+                  name="description"
+                  value={selectedProduct?.description || ""}
+                  onChange={handleInputChange}
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 ></textarea>
               </div>
@@ -918,7 +910,10 @@ const Products = () => {
                 </span>
               </div>
 
-              <button className="mt-10 flex w-full justify-center rounded-md bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
+              <button
+                onClick={handleUpdateProduct}
+                className="mt-10 flex w-full justify-center rounded-md bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
+              >
                 Edit Product
               </button>
             </div>
