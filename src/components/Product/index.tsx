@@ -150,7 +150,6 @@ const Products = () => {
       setAllCategories(filterCategories);
       return response?.data;
     },
-    staleTime: Infinity,
     retry: false,
   });
 
@@ -164,7 +163,6 @@ const Products = () => {
       const response = await getAllProducts();
       return response?.data;
     },
-    enabled: !!categories,
     retry: false,
   });
 
