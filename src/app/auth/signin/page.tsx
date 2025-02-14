@@ -69,7 +69,10 @@ const SignIn: React.FC = () => {
 
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="Sign In" />
+      {/* <Breadcrumb pageName="Sign In" /> */}
+      <h2 className="mb-6 text-title-md2 font-semibold text-black dark:text-white">
+        Sign In
+      </h2>
 
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">

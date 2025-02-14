@@ -15,7 +15,11 @@ export const metadata: Metadata = {
 const SignUp: React.FC = () => {
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="Sign Up" />
+      {/* <Breadcrumb pageName="Sign Up" /> */}
+
+      <h2 className="mb-6 text-title-md2 font-semibold text-black dark:text-white">
+        Sign Up
+      </h2>
 
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
