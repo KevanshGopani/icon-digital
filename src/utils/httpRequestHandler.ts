@@ -3,7 +3,7 @@ import { handleGlobalError } from "./error-handler";
 
 export async function dispatchHttpRequest<T>(
   endpoint: string,
-  method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "GET",
   options: {
     headers?: Record<string, string>;
     queryParams?: Record<string, string | number>;

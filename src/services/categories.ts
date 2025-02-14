@@ -3,7 +3,7 @@ import { dispatchHttpRequest } from "@/utils/httpRequestHandler";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-export async function getAllUsers(): Promise<ActionResponse<any>> {
+export async function getAllCategories(): Promise<ActionResponse<any>> {
   if (!API_BASE_URL?.length) {
     return {
       success: false,
@@ -13,7 +13,7 @@ export async function getAllUsers(): Promise<ActionResponse<any>> {
 
   try {
     const response: any = await dispatchHttpRequest(
-      `${API_BASE_URL}/user`,
+      `${API_BASE_URL}/category`,
       "GET",
     );
     return { success: true, data: response.data.data, status: response.status };
@@ -22,8 +22,8 @@ export async function getAllUsers(): Promise<ActionResponse<any>> {
   }
 }
 
-export async function getUserById(
-  userId: string,
+export async function getCategoriesById(
+  categoryId: string,
 ): Promise<ActionResponse<any>> {
   if (!API_BASE_URL?.length) {
     return {
@@ -34,7 +34,7 @@ export async function getUserById(
 
   try {
     const response: any = await dispatchHttpRequest(
-      `${API_BASE_URL}/user/${userId}`,
+      `${API_BASE_URL}/category/${categoryId}`,
       "GET",
     );
     return { success: true, data: response.data.data, status: response.status };
@@ -43,7 +43,9 @@ export async function getUserById(
   }
 }
 
-export async function deleteUser(userId: string): Promise<ActionResponse<any>> {
+export async function deleteCategories(
+  categoryId: string,
+): Promise<ActionResponse<any>> {
   if (!API_BASE_URL?.length) {
     return {
       success: false,
@@ -53,7 +55,7 @@ export async function deleteUser(userId: string): Promise<ActionResponse<any>> {
 
   try {
     const response: any = await dispatchHttpRequest(
-      `${API_BASE_URL}/user/${userId}`,
+      `${API_BASE_URL}/category/${categoryId}`,
       "DELETE",
     );
     return { success: true, data: response.data.data, status: response.status };
@@ -62,9 +64,9 @@ export async function deleteUser(userId: string): Promise<ActionResponse<any>> {
   }
 }
 
-export async function updateUser(
-  userData: any,
-  userId: string,
+export async function updateCategories(
+  categoryData: any,
+  categoryId: string,
 ): Promise<ActionResponse<any>> {
   if (!API_BASE_URL?.length) {
     return {
@@ -75,9 +77,9 @@ export async function updateUser(
 
   try {
     const response: any = await dispatchHttpRequest(
-      `${API_BASE_URL}/user/${userId}`,
+      `${API_BASE_URL}/category/${categoryId}`,
       "PUT",
-      { body: userData },
+      { body: categoryData },
     );
     return { success: true, data: response.data.data, status: response.status };
   } catch (error: any) {
@@ -85,9 +87,8 @@ export async function updateUser(
   }
 }
 
-export async function ChangeUserStatus(
-  userData: any,
-  userId: string,
+export async function createCategories(
+  categoryData: any,
 ): Promise<ActionResponse<any>> {
   if (!API_BASE_URL?.length) {
     return {
@@ -98,28 +99,9 @@ export async function ChangeUserStatus(
 
   try {
     const response: any = await dispatchHttpRequest(
-      `${API_BASE_URL}/user/${userId}/status`,
-      "PUT",
-      { body: userData },
-    );
-    return { success: true, data: response.data.data, status: response.status };
-  } catch (error: any) {
-    throw error;
-  }
-}
-
-export async function getUserSummary(): Promise<ActionResponse<any>> {
-  if (!API_BASE_URL?.length) {
-    return {
-      success: false,
-      errors: { message: "API base URL is not defined" },
-    };
-  }
-
-  try {
-    const response: any = await dispatchHttpRequest(
-      `${API_BASE_URL}/user/stats/summary`,
-      "GET",
+      `${API_BASE_URL}/category`,
+      "POST",
+      { body: categoryData },
     );
     return { success: true, data: response.data.data, status: response.status };
   } catch (error: any) {
