@@ -26,7 +26,10 @@ export default function DefaultLayout({
           className={`relative flex flex-1 flex-col ${!pathName?.includes("auth") && "lg:ml-72.5"}`}
         >
           {/* <!-- ===== Header Start ===== --> */}
-          <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          {!pathName?.includes("auth") && (
+            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          )}
+
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Start ===== --> */}
