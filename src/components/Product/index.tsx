@@ -5,7 +5,11 @@ import Switch from "../common/Switch/page";
 import ActionModel from "../common/ActionModel/page";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllCategories } from "@/services/categories";
-import { getAllProducts, updateProduct } from "@/services/products";
+import {
+  deleteProduct,
+  getAllProducts,
+  updateProduct,
+} from "@/services/products";
 import Loader from "../common/Loader";
 import { toast } from "react-toastify";
 
@@ -102,6 +106,21 @@ const Products = () => {
     retry: false,
   });
 
+  const handleDeleteProductMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      await deleteProduct(productId);
+    },
+    onSuccess(data, variables, context) {
+      toast.success("Product deleted successfully", {
+        toastId: "deleted-successfully",
+      });
+      refetchProducts();
+    },
+    onError(error, variables, context) {
+      toast.error("Something went wrong!", { toastId: "Product-error" });
+    },
+  });
+
   const updateProducts = useMutation({
     mutationFn: async (updatedProduct: any) => {
       await updateProduct(updatedProduct, selectedProduct.id);
@@ -135,6 +154,10 @@ const Products = () => {
     }
   }, [allProducts]);
 
+  const handleDeleteProduct = (productId: string) => {
+    handleDeleteProductMutation.mutateAsync(productId);
+  };
+
   const toggleEditForm = (product?: any | null) => {
     setEditForm(!editForm);
     if (product) {
@@ -158,7 +181,12 @@ const Products = () => {
     updateProducts.mutateAsync(updatedProduct);
   };
 
-  if (allCategoriesLoading || allProductsLoading || updateProducts.isPending) {
+  if (
+    allCategoriesLoading ||
+    allProductsLoading ||
+    updateProducts.isPending ||
+    handleDeleteProductMutation.isPending
+  ) {
     return <Loader />;
   }
 
@@ -251,6 +279,9 @@ const Products = () => {
                       <td className="relative p-3">
                         <ActionModel
                           toggleEditForm={() => toggleEditForm(item)}
+                          handleDeleteProduct={() =>
+                            handleDeleteProduct(item.id)
+                          }
                         />
                       </td>
                     </tr>
@@ -355,7 +386,7 @@ const Products = () => {
                       </div>
 
                       {/* Dynamic Options with Delete Button */}
-                      {allCategories?.map((item: any, i) => (
+                      {allCategories?.map((item: any, i: any) => (
                         <div
                           key={i}
                           className="flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
