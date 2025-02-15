@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Switch from "../common/Switch/page";
 import ActionModel from "../common/ActionModel/page";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getAllCategories } from "@/services/categories";
+import { deleteCategories, getAllCategories } from "@/services/categories";
 import {
   deleteProduct,
   getAllProducts,
@@ -106,6 +106,20 @@ const Products = () => {
     retry: false,
   });
 
+  const handleDeleteCategoriesMutation = useMutation({
+    mutationFn: async (categoryId: string) => {
+      await deleteCategories(categoryId);
+    },
+    onSuccess(data, variables, context) {
+      toast.success("Categories deleted successfully", {
+        toastId: "deleted-successfully",
+      });
+    },
+    onError(error, variables, context) {
+      toast.error("Something went wrong!", { toastId: "Categories-error" });
+    },
+  });
+
   const handleDeleteProductMutation = useMutation({
     mutationFn: async (productId: string) => {
       await deleteProduct(productId);
@@ -156,6 +170,10 @@ const Products = () => {
 
   const handleDeleteProduct = (productId: string) => {
     handleDeleteProductMutation.mutateAsync(productId);
+  };
+
+  const handleDeleteCategories = (categoryId: string) => {
+    handleDeleteCategoriesMutation.mutateAsync(categoryId);
   };
 
   const toggleEditForm = (product?: any | null) => {
@@ -401,7 +419,7 @@ const Products = () => {
                           </span>
 
                           {/* Delete Button */}
-                          <button className="ml-2">
+                          <button className="ml-2" onClick={() => handleDeleteCategories(item.id)} >
                             <svg
                               stroke="currentColor"
                               fill="currentColor"
