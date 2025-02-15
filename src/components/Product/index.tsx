@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Switch from "../common/Switch/page";
 import ActionModel from "../common/ActionModel/page";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllCategories } from "@/services/categories";
 import { getAllProducts, updateProduct } from "@/services/products";
 import Loader from "../common/Loader";
+import { toast } from "react-toastify";
 
 const Products = () => {
   const [addform, setAddForm] = useState(false);
@@ -61,18 +62,16 @@ const Products = () => {
     setAddForm(!addform);
   };
 
-
-
   // re-arrange field
 
   const [allCategories, setAllCategories] = useState<any>([]);
-  const [filterProducts, setFilterProducts] = useState([]);
+  const [filterProducts, setFilterProducts] = useState<any>([]);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
-
   const {
     data: categories,
     error: allCategoriesProblemOccurred,
     isLoading: allCategoriesLoading,
+    refetch: refetchAllOrder,
   } = useQuery({
     queryKey: ["all-categories"],
     queryFn: async () => {
@@ -93,7 +92,7 @@ const Products = () => {
     data: allProducts,
     error: allProductsProblemOccurred,
     isLoading: allProductsLoading,
-    refetch: refetchProducts
+    refetch: refetchProducts,
   } = useQuery({
     queryKey: ["all-products"],
     queryFn: async () => {
@@ -101,6 +100,25 @@ const Products = () => {
       return response?.data;
     },
     retry: false,
+  });
+
+  const updateProducts = useMutation({
+    mutationFn: async (updatedProduct: any) => {
+      await updateProduct(updatedProduct, selectedProduct.id);
+      refetchProducts();
+    },
+    onSuccess: () => {
+      toast.success("Product updated successfully!", {
+        toastId: "Product-updated",
+      });
+      setEditForm(!editForm);
+    },
+
+    onError: () => {
+      toast.error("Failed to delete order. Please try again.", {
+        toastId: "deleteOrder",
+      });
+    },
   });
 
   const handleSelectedProducts = (selectedProductName: string) => {
@@ -111,13 +129,13 @@ const Products = () => {
     setFilterProducts(selectedProducts);
   };
 
-  if (allCategoriesLoading || allProductsLoading) {
-    return <Loader />;
-  }
+  useEffect(() => {
+    if (allProducts) {
+      handleSelectedProducts(filterProducts?.[0]?.category?.name);
+    }
+  }, [allProducts]);
 
-  console.log({ allCategories, categories, filterProducts });
-
-  const toggleEditForm = (product?: any) => {
+  const toggleEditForm = (product?: any | null) => {
     setEditForm(!editForm);
     if (product) {
       setSelectedProduct(product);
@@ -132,30 +150,17 @@ const Products = () => {
 
   const handleUpdateProduct = async (e: any) => {
     e.preventDefault();
-  
     if (!selectedProduct?.id) {
       alert("No product selected for update.");
       return;
     }
-  
-    try {
-      const updatedProduct = { ...selectedProduct, images };
-  
-      const response = await updateProduct(updatedProduct, selectedProduct.id);
-  
-      if (response.success) {
-        alert("Product updated successfully!");
-        setEditForm(false);
-        refetchProducts(); // If using react-query, re-fetch the product list
-      } else {
-        alert(`Failed to update product: ${response.errors.message}`);
-      }
-    } catch (error) {
-      console.error("Update error:", error);
-      alert("Something went wrong.");
-    }
+    const updatedProduct = { ...selectedProduct, images };
+    updateProducts.mutateAsync(updatedProduct);
   };
-  
+
+  if (allCategoriesLoading || allProductsLoading || updateProducts.isPending) {
+    return <Loader />;
+  }
 
   return (
     <div className="h-[100vh] rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -176,7 +181,7 @@ const Products = () => {
             Category
           </p>
           <div className="mt-5 grid h-[78vh] gap-3 overflow-auto">
-            {allCategories?.map((item: any, i) => {
+            {allCategories?.map((item: any, i: any) => {
               return (
                 <p
                   className="cursor-pointer text-[#000]"
@@ -244,7 +249,9 @@ const Products = () => {
 
                       {/* Actions Column */}
                       <td className="relative p-3">
-                        <ActionModel toggleEditForm={toggleEditForm} />
+                        <ActionModel
+                          toggleEditForm={() => toggleEditForm(item)}
+                        />
                       </td>
                     </tr>
                   );
@@ -328,7 +335,6 @@ const Products = () => {
                       {/* Add Custom Type Button */}
                       <button
                         onClick={() => {
-                          console.log("Open Modal or Input Field");
                           setIsOpen(false);
                           handleOpenModal();
                         }}
@@ -461,7 +467,6 @@ const Products = () => {
                       {/* Add Custom Type Button */}
                       <button
                         onClick={() => {
-                          console.log("Open Modal or Input Field");
                           setIsOpen1(false);
                           handleOpenModal1(true);
                         }}
@@ -674,7 +679,6 @@ const Products = () => {
                       {/* Add Custom Type Button */}
                       <button
                         onClick={() => {
-                          console.log("Open Modal or Input Field");
                           setIsOpen(false);
                           handleOpenModal(true);
                         }}
@@ -782,7 +786,6 @@ const Products = () => {
                       {/* Add Custom Type Button */}
                       <button
                         onClick={() => {
-                          console.log("Open Modal or Input Field");
                           setIsOpen1(false);
                           handleOpenModal1(true);
                         }}
