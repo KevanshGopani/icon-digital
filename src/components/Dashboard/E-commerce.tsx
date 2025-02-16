@@ -6,6 +6,11 @@ import ChartTwo from "../Charts/ChartTwo";
 import ChatCard from "../Chat/ChatCard";
 import TableOne from "../Tables/TableOne";
 import CardDataStats from "../CardDataStats";
+import { useQuery } from "@tanstack/react-query";
+import { getAllOrder } from "@/services/order";
+import { getAllProducts } from "@/services/products";
+import { getAllUsers } from "@/services/users";
+import { convertTimestampToDate } from "@/utils/date-conversion";
 
 const MapOne = dynamic(() => import("@/components/Maps/MapOne"), {
   ssr: false,
@@ -16,10 +21,77 @@ const ChartThree = dynamic(() => import("@/components/Charts/ChartThree"), {
 });
 
 const ECommerce: React.FC = () => {
+  const {
+    data: allOrder = [],
+    isLoading,
+    refetch: refetchAllOrder,
+  } = useQuery({
+    queryKey: ["all-order"],
+    queryFn: async () => {
+      const response = await getAllOrder();
+      return response?.data || [];
+    },
+    retry: false,
+  });
+
+  const {
+    data: allProducts,
+    error: allProductsProblemOccurred,
+    isLoading: allProductsLoading,
+    refetch: refetchProducts,
+  } = useQuery({
+    queryKey: ["all-products"],
+    queryFn: async () => {
+      const response = await getAllProducts();
+      return response?.data;
+    },
+    retry: false,
+  });
+
+  const {
+    data: allUsers = [],
+    error: allUserProblemOccurred,
+    isLoading: allUsersLoading,
+    refetch: refetchAllUsers,
+  } = useQuery({
+    queryKey: ["all-users"],
+    queryFn: async () => {
+      const response = await getAllUsers();
+      const allRefineUserData = response?.data.map((user: any) => {
+        return {
+          userid: user.id,
+          name: user.firstName + " " + user.lastName,
+          email: user.email,
+          role: user.role,
+          create: convertTimestampToDate(user.createdAt),
+          update: convertTimestampToDate(user.updatedAt),
+        };
+      });
+
+      return allRefineUserData;
+    },
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  const totalOrder = allOrder.length;
+
+  const totalProducts = allProducts?.length || 0;
+
+  const recentOrdersCount =
+    allOrder?.filter((order: any) => {
+      const orderDate = new Date(order.date);
+      const now = new Date();
+      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      return orderDate >= twentyFourHoursAgo && orderDate <= now;
+    }).length || 0;
+
+  const totalUsers = allUsers.length;
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total Orders" total="$45,2K" rate="4.35%" levelUp>
+        <CardDataStats title="Total Orders" total={`${totalOrder.toFixed()}`}>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -44,9 +116,7 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
         <CardDataStats
           title="Recent Orders"
-          total="3.456"
-          rate="0.95%"
-          levelDown
+          total={recentOrdersCount.toString()}
         >
           <svg
             className="fill-primary dark:fill-white"
@@ -66,7 +136,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
+        <CardDataStats title="Total Product" total={totalProducts.toString()}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -85,7 +155,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats title="Total Users" total={totalUsers.toString()}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"

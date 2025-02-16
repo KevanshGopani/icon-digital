@@ -65,6 +65,12 @@ const Order = () => {
         <table className="w-full border-collapse border border-stroke dark:border-strokedark">
           <thead>
             <tr className="bg-gray-100 dark:bg-strokedark">
+            <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                Order ID
+              </th>
+              <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                User ID
+              </th>
               <th className="border border-stroke px-4 py-2 dark:border-strokedark">
                 Order Status
               </th>
@@ -87,6 +93,12 @@ const Order = () => {
                   key={key}
                   className="hover:bg-gray-50 dark:hover:bg-strokedark"
                 >
+                  <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                    {order.orderid}
+                  </td>
+                  <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                    {order.userid}
+                  </td>
                   <td className="border border-stroke px-4 py-2 dark:border-strokedark">
                     {order.orderstatus}
                   </td>
