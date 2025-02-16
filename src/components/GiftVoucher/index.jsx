@@ -1,12 +1,48 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import Loader from "../common/Loader";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { deleteCoupon, getAllCoupon } from "@/services/coupons";
 
 const GiftVoucher = () => {
+    const {
+        data: allCoupon,
+        isLoading,
+        refetch: refetchAllCoupon,
+    } = useQuery({
+        queryKey: ["all-coupon"],
+        queryFn: async () => {
+            const response = await getAllCoupon();
+            return response?.data || [];
+        },
+        retry: false,
+    });
+
+    const handleDeleteCouponMutation = useMutation({
+        mutationFn: async (couponId) => {
+            await deleteCoupon(couponId);
+        },
+        onSuccess(data, variables, context) {
+            refetchCategories();
+            toast.success("Categories coupon successfully", {
+                toastId: "deleted-successfully",
+            });
+        },
+        onError(error, variables, context) {
+            toast.error("Something went wrong!", { toastId: "Coupon-error" });
+        },
+    });
+
+    const handleDeleteCoupon = (couponId) => {
+        handleDeleteCouponMutation.mutateAsync(couponId);
+    };
+
     return (
         <>
-            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark p-6">
-                <div className="flex justify-between items-start">
-                    <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
+            <div className="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+                <div className="flex items-start justify-between">
+                    <h4 className="mb-4 text-xl font-semibold text-black dark:text-white">
                         Gift Voucher List
                     </h4>
 
@@ -48,53 +84,90 @@ const GiftVoucher = () => {
                         </span>
                     </div>
                 </div>
-
-                <table className="w-full border-collapse border border-stroke dark:border-strokedark">
-                    <thead>
-                        <tr className="bg-gray-100 dark:bg-strokedark">
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Date</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Purches By</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Used By</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Discription</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Email</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Phone Number</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Product Details</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Discount Amount</th>
-                            <th className="border border-stroke dark:border-strokedark px-4 py-2">Total Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="hover:bg-gray-50 dark:hover:bg-strokedark">
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                26-1-25
-                            </td>
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                admin
-                            </td>
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                admin
-                            </td>
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                HP 1920
-                            </td>
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                user@gmail.com
-                            </td>
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                8899775564
-                            </td>
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                Laptop
-                            </td>
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                ₹ 5,000
-                            </td>
-                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                                ₹ 50,000
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                {isLoading ? (
+                    <Loader />
+                ) : (
+                    <table className="w-full border-collapse border border-stroke dark:border-strokedark">
+                        <thead>
+                            <tr className="bg-gray-100 dark:bg-strokedark">
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Date
+                                </th>
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Purches By
+                                </th>
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Used By
+                                </th>
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Discription
+                                </th>
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Email
+                                </th>
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Phone Number
+                                </th>
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Product Details
+                                </th>
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Discount Amount
+                                </th>
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Total Amount
+                                </th>
+                                <th className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {allCoupon.map((coupon) => (
+                                <tr
+                                    key={coupon.id}
+                                    className="hover:bg-gray-50 dark:hover:bg-strokedark"
+                                >
+                                    <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                        {coupon.date}
+                                    </td>
+                                    <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                        {coupon.purchasedBy}
+                                    </td>
+                                    <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                        {coupon.usedBy}
+                                    </td>
+                                    <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                        {coupon.description}
+                                    </td>
+                                    <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                        {coupon.email}
+                                    </td>
+                                    <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                        {coupon.phoneNumber}
+                                    </td>
+                                    <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                        {coupon.productDetails}
+                                    </td>
+                                    <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                        ₹ {coupon.discountAmount}
+                                    </td>
+                                    <td className="border border-stroke px-4 py-2 dark:border-strokedark">
+                                        ₹ {coupon.totalAmount}
+                                    </td>
+                                    <td className="space-y-5 border border-stroke px-4 py-2 text-center dark:border-strokedark">
+                                        <button
+                                            className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                                            onClick={() => handleDeleteCoupon(coupon.id)}
+                                        >
+                                            Deletes
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
         </>
     );

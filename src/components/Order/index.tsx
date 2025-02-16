@@ -105,7 +105,7 @@ const Order = () => {
                       View
                     </button>
 
-                    <button className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600">
+                    <button onClick={() => handleDelete(order.id)} className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600">
                       Delete
                     </button>
                   </td>
