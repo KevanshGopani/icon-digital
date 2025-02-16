@@ -76,15 +76,15 @@ const Products = () => {
     data: categories,
     error: allCategoriesProblemOccurred,
     isLoading: allCategoriesLoading,
-    refetch: refetchAllOrder,
+    refetch: refetchCategories,
   } = useQuery({
     queryKey: ["all-categories"],
     queryFn: async () => {
       const response = await getAllCategories();
-
       const filterCategories = response?.data?.map((item: any) => ({
         title: item?.name,
         value: item.name,
+        id: item?.id,
       }));
       setSelectedCategory(filterCategories?.[0]?.title);
       setAllCategories(filterCategories);
@@ -126,6 +126,7 @@ const Products = () => {
       await deleteCategories(categoryId);
     },
     onSuccess(data, variables, context) {
+      refetchCategories();
       toast.success("Categories deleted successfully", {
         toastId: "deleted-successfully",
       });
@@ -225,8 +226,6 @@ const Products = () => {
   ) {
     return <Loader />;
   }
-  console.log({ filterProducts });
-
   return (
     <div className="h-[100vh] rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="mb-4 flex justify-between">
@@ -434,7 +433,7 @@ const Products = () => {
                               setIsOpen(false);
                             }}
                           >
-                            {item?.title}??
+                            {item?.title}
                           </span>
 
                           {/* Delete Button */}
