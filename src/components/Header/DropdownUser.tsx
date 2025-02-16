@@ -1,16 +1,32 @@
+"use client";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ClickOutside from "@/components/ClickOutside";
 import Cookies from "js-cookie";
+import { useMutation } from "@tanstack/react-query";
+import { signOut } from "@/services/authentication";
+import { toast } from "react-toastify";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      await signOut();
+    },
+    onSuccess(data, variables, context) {
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      window.location.href = "/auth/signin";
+    },
+    onError(error, variables, context) {
+      toast.error("Something went wrong!", { toastId: "Categories-error" });
+    },
+  });
+
   const handleLogOut = () => {
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
-    window.location.href = "/auth/signin";
+    logoutMutation.mutateAsync();
   };
 
   return (

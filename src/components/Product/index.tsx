@@ -12,6 +12,7 @@ import {
 } from "@/services/products";
 import Loader from "../common/Loader";
 import { toast } from "react-toastify";
+import { getAllBrand } from "@/services/brand";
 
 const Products = () => {
   const [addform, setAddForm] = useState(false);
@@ -106,6 +107,20 @@ const Products = () => {
     retry: false,
   });
 
+  const {
+    data: allBrandsData,
+    error: allBrandsProblemOccurred,
+    isLoading: allBrandsLoading,
+  } = useQuery({
+    queryKey: ["all-brands"],
+    queryFn: async () => {
+      const response = await getAllBrand();
+      return response?.data;
+    },
+    staleTime: Infinity,
+    retry: false,
+  });
+
   const handleDeleteCategoriesMutation = useMutation({
     mutationFn: async (categoryId: string) => {
       await deleteCategories(categoryId);
@@ -178,6 +193,8 @@ const Products = () => {
 
   const toggleEditForm = (product?: any | null) => {
     setEditForm(!editForm);
+    setIsOpen(false);
+    setIsOpen1(false);
     if (product) {
       setSelectedProduct(product);
       setImages(product?.images || []);
@@ -203,10 +220,12 @@ const Products = () => {
     allCategoriesLoading ||
     allProductsLoading ||
     updateProducts.isPending ||
-    handleDeleteProductMutation.isPending
+    handleDeleteProductMutation.isPending ||
+    allBrandsLoading
   ) {
     return <Loader />;
   }
+  console.log({ filterProducts });
 
   return (
     <div className="h-[100vh] rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -290,7 +309,7 @@ const Products = () => {
 
                       {/* Stock Column */}
                       <td className="p-3">
-                        <Switch />
+                        <Switch isAvailable={item?.stock > 0} />
                       </td>
 
                       {/* Actions Column */}
@@ -351,16 +370,16 @@ const Products = () => {
                 />
               </div>
 
-              {/* <div className="mb-4.5">
-                                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                                    Product Category
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter your Category"
-                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                />
-                            </div> */}
+              <div className="mb-4.5">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Product Category
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your Category"
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                />
+              </div>
 
               <div className="mb-4.5">
                 <div className="flex items-center justify-between">
@@ -419,7 +438,10 @@ const Products = () => {
                           </span>
 
                           {/* Delete Button */}
-                          <button className="ml-2" onClick={() => handleDeleteCategories(item.id)} >
+                          <button
+                            className="ml-2"
+                            onClick={() => handleDeleteCategories(item.id)}
+                          >
                             <svg
                               stroke="currentColor"
                               fill="currentColor"
@@ -504,7 +526,7 @@ const Products = () => {
 
                 <div className="relative mt-3 w-full">
                   <button
-                    onClick={() => setIsOpen1(!isOpen)}
+                    onClick={() => setIsOpen1(!isOpen1)}
                     className="flex w-full items-center justify-between rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   >
                     {selectedProduct1?.title || "Select Product Brand"}
@@ -535,7 +557,7 @@ const Products = () => {
                       </div>
 
                       {/* Dynamic Options */}
-                      {allCategories?.map((item: any, i) => (
+                      {allCategories?.map((item: any, i: any) => (
                         <div
                           key={i}
                           className="cursor-pointer px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -823,7 +845,7 @@ const Products = () => {
 
                 <div className="relative w-full">
                   <button
-                    onClick={() => setIsOpen1(!isOpen)}
+                    onClick={() => setIsOpen1(!isOpen1)}
                     className="flex w-full items-center justify-between rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   >
                     {selectedProduct1?.title || "Select Product Brand"}
@@ -831,7 +853,7 @@ const Products = () => {
                   </button>
 
                   {isOpen1 && (
-                    <div className="absolute left-0 z-10 mt-2 w-full rounded-md border border-gray-300 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800">
+                    <div className="absolute left-0 !z-30 mt-2 w-full rounded-md border border-gray-300 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800">
                       {/* Add Custom Type Button */}
                       <button
                         onClick={() => {
@@ -850,11 +872,11 @@ const Products = () => {
                           setIsOpen1(false);
                         }}
                       >
-                        Select Product Brand
+                        Select Product Brand RAM
                       </div>
 
                       {/* Dynamic Options */}
-                      {allCategories?.map((item: any, i) => (
+                      {allBrandsData?.map((item: any, i: any) => (
                         <div
                           key={i}
                           className="cursor-pointer px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -863,7 +885,7 @@ const Products = () => {
                             setIsOpen1(false);
                           }}
                         >
-                          {item?.title}
+                          {item?.name}
                         </div>
                       ))}
                     </div>

@@ -37,7 +37,7 @@ export async function signOut(): Promise<ActionResponse<any>> {
   try {
     const response: any = await dispatchHttpRequest(
       `${API_BASE_URL}/auth/logout`,
-      "GET",
+      "POST",
     );
     return { success: true, data: response.data, status: response.status };
   } catch (error: any) {
