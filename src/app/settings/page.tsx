@@ -1,15 +1,23 @@
+"use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Image from "next/image";
-import { Metadata } from "next";
+import Cookies from "js-cookie";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import { useEffect, useState } from "react";
 
-export const metadata: Metadata = {
-  title: "Next.js Settings | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js Settings page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
-};
+// export const metadata: Metadata = {
+//   title: "Next.js Settings | TailAdmin - Next.js Dashboard Template",
+//   description:
+//     "This is Next.js Settings page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+// };
 
 const Settings = () => {
+  const [userDetails, setUserDetails] = useState<any>(null);
+  useEffect(() => {
+    const detail = Cookies.get("user");
+    const parsedDetail = detail ? JSON.parse(detail) : null;
+    setUserDetails(parsedDetail);
+  }, []);
   return (
     <DefaultLayout>
       <div className="mx-auto max-w-270">
@@ -65,7 +73,9 @@ const Settings = () => {
                           name="fullName"
                           id="fullName"
                           placeholder="Devid Jhon"
-                          defaultValue="Devid Jhon"
+                          defaultValue={
+                            userDetails?.firstName + " " + userDetails?.lastName
+                          }
                         />
                       </div>
                     </div>
@@ -83,7 +93,7 @@ const Settings = () => {
                         name="phoneNumber"
                         id="phoneNumber"
                         placeholder="+990 3343 7865"
-                        defaultValue="+990 3343 7865"
+                        defaultValue={userDetails?.phone}
                       />
                     </div>
                   </div>
@@ -127,7 +137,7 @@ const Settings = () => {
                         name="emailAddress"
                         id="emailAddress"
                         placeholder="devidjond45@gmail.com"
-                        defaultValue="devidjond45@gmail.com"
+                        defaultValue={userDetails?.email}
                       />
                     </div>
                   </div>
@@ -145,7 +155,7 @@ const Settings = () => {
                       name="Username"
                       id="Username"
                       placeholder="devidjhon24"
-                      defaultValue="devidjhon24"
+                      // defaultValue="devidjhon24"
                     />
                   </div>
 
@@ -194,7 +204,7 @@ const Settings = () => {
                         id="bio"
                         rows={6}
                         placeholder="Write your bio here"
-                        defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere fermentum urna, eu condimentum mauris tempus ut. Donec fermentum blandit aliquet."
+                        // defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere fermentum urna, eu condimentum mauris tempus ut. Donec fermentum blandit aliquet."
                       ></textarea>
                     </div>
                   </div>

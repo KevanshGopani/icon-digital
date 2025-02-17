@@ -32,7 +32,7 @@ const SignIn: React.FC = () => {
         email: formData.email,
         password: formData.password,
       });
-
+      Cookies.set("user", JSON.stringify(response?.data.user));
       const { accessToken, refreshToken, expiresIn, refreshTokenExpiresIn } =
         response?.data.tokens;
       // Store tokens in cookies
